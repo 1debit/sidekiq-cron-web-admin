@@ -30,6 +30,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'sidekiq-cron', '1.1.0'
 
   spec.add_development_dependency 'bundler', '~> 2.0'
+  spec.add_development_dependency 'minitest'
+  spec.add_development_dependency 'mocha'
+  spec.add_development_dependency 'rack'
+  spec.add_development_dependency 'rack-test'
   spec.add_development_dependency 'rake', '~> 10.0'
-  spec.add_development_dependency 'rspec', '~> 3.0'
+  spec.add_development_dependency 'redis-namespace', '>= 1.5.2'
+  spec.add_development_dependency 'shoulda-context'
+  spec.add_development_dependency 'test-unit'
 end
