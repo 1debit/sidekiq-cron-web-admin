@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/sidekiq-cron-web-admin.
+Bug reports and pull requests are welcome on GitHub at https://github.com/1debit/sidekiq-cron-web-admin.
 
 ## License
 
