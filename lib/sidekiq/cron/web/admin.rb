@@ -1,5 +1,6 @@
 require "sidekiq/cron/web/admin/version"
-require "sidekiq/cron/web/admin/launcher"
+require "sidekiq/cron/launcher"
+require "sidekiq/cron/poller"
 
 module Sidekiq
   module Cron

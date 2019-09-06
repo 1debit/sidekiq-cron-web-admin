@@ -1,4 +1,4 @@
-require 'sidekiq/cron/launcher'
+require 'sidekiq/launcher'
 
 module Sidekiq
   class Launcher
