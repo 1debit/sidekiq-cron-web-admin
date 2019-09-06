@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['pm@chime.com']
 
   spec.summary       = 'sidekiq-cron web admin.'
-  spec.description   = 'Gives sidekiq-cron web admin removing all of the code for runing the cron works.'
+  spec.description   = 'Gives sidekiq-cron web admin removing all of the code for running the cron jobs.'
   spec.homepage      = 'https://github.com/1debit/sidekiq-cron-web-admin'
   spec.license       = 'MIT'
 
