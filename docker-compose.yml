@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  sidekiq-cron-web-admin:
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - BUNDLE_GITHUB__COM=${GITHUB_TOKEN}:x-oauth-basic
+        - BUNDLE_GEM__FURY__IO=${GEMFURY_TOKEN}
+    environment:
+      BUNDLE_GITHUB__COM: "${GITHUB_TOKEN}:x-oauth-basic"
+      BUNDLE_GEM__FURY__IO: "${GEMFURY_TOKEN}"
+    volumes:
+      - .:/gem
+      - bundle-cache:/usr/local/bundle
+
+volumes:
+  bundle-cache:
