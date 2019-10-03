@@ -9,3 +9,12 @@
 
 # rspec failure tracking
 .rspec_status
+*.gem
+.bash_history
+.bundle
+.coverage
+.env
+.env.local
+.pry_history
+coverage
+vendor
