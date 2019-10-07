@@ -2,6 +2,7 @@
 
 require './test/test_helper'
 require 'sidekiq/testing'
+Sidekiq::Testing.fake!
 
 describe 'Cron Poller' do
   before do
