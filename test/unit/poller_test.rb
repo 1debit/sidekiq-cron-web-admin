@@ -1,18 +1,11 @@
 # frozen_string_literal: true
 
 require './test/test_helper'
+require 'sidekiq/testing'
 
 describe 'Cron Poller' do
   before do
-    Sidekiq.redis = REDIS
-    Sidekiq.redis(&:flushdb)
-
-    # clear all previous saved data from redis
-    Sidekiq.redis do |conn|
-      conn.keys('cron_job*').each do |key|
-        conn.del(key)
-      end
-    end
+    Sidekiq::Queues.clear_all
 
     @args = {
       name: 'Test',
