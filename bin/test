@@ -1,0 +1,18 @@
+#!/bin/bash -e
+
+if [[ ! -z "${CC_TEST_REPORTER_ID}" ]]; then
+  apt-get update -qq && apt-get install -y curl
+  curl -s -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  chmod +x ./cc-test-reporter
+
+  ./cc-test-reporter before-build
+fi
+
+bundle exec rake test
+EXIT_CODE=$?
+
+if [[ ! -z "${CC_TEST_REPORTER_ID}" ]]; then
+  ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code ${EXIT_CODE}
+fi
+
+exit ${EXIT_CODE}
