@@ -23,8 +23,10 @@ describe 'Cron Poller' do
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 5, 1)
     Time.stubs(:now).returns(enqueued_time)
 
-    Sidekiq::Cron::Job.create(@args)
-    Sidekiq::Cron::Job.create(@args2)
+    Sidekiq::Testing.inline! do
+      Sidekiq::Cron::Job.create(@args)
+      Sidekiq::Cron::Job.create(@args2)
+    end
 
     assert_raises RuntimeError do
       @poller.enqueue
