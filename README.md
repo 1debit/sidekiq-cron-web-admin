@@ -29,6 +29,7 @@ Or install it yourself as:
 4. Update the files at lib, and if needed to overwrite files from https://github.com/ondrejbartas/sidekiq-cron copy/paste the files into `lib/` and update them (see the examples https://github.com/1debit/sidekiq-cron-web-admin/tree/master/lib/sidekiq/cron)
 5. Add tests using `test-unit` and run the tests: `bundle exec rake test`
 6. Push the changes to the branch and create a PR
+7. Increase the version at https://github.com/1debit/sidekiq-cron-web-admin/blob/master/lib/sidekiq/cron/web/admin/version.rb before merging the branch to master
 
 
 ## Contributing
