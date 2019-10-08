@@ -2,11 +2,10 @@
 
 require './test/test_helper'
 require 'sidekiq/testing'
-Sidekiq::Testing.fake!
 
 describe 'Cron Poller' do
   before do
-    Sidekiq::Queues.clear_all
+    Sidekiq::Testing.inline!
 
     @args = {
       name: 'Test',
@@ -24,10 +23,8 @@ describe 'Cron Poller' do
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 5, 1)
     Time.stubs(:now).returns(enqueued_time)
 
-    Sidekiq::Testing.inline! do
-      Sidekiq::Cron::Job.create(@args)
-      Sidekiq::Cron::Job.create(@args2)
-    end
+    Sidekiq::Cron::Job.create(@args)
+    Sidekiq::Cron::Job.create(@args2)
 
     assert_raises RuntimeError do
       @poller.enqueue
