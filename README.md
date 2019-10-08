@@ -23,12 +23,12 @@ Or install it yourself as:
 
 ## Development
 
-1 - Clone this repository
-2 - Setup the .env file using the .env.example
-3 - Run `bundle`
-4 - Update the files at lib, and if needed to overwrite files from https://github.com/ondrejbartas/sidekiq-cron copy/paste the files into `lib/` and update them (see the examples https://github.com/1debit/sidekiq-cron-web-admin/tree/master/lib/sidekiq/cron)
-5 - Add tests using `test-unit` and run the tests: `bundle exec rake test`
-6 - Push the changes to the branch and create a PR
+1. Clone this repository
+2. Setup the .env file using the .env.example
+3. Run `bundle`
+4. Update the files at lib, and if needed to overwrite files from https://github.com/ondrejbartas/sidekiq-cron copy/paste the files into `lib/` and update them (see the examples https://github.com/1debit/sidekiq-cron-web-admin/tree/master/lib/sidekiq/cron)
+5. Add tests using `test-unit` and run the tests: `bundle exec rake test`
+6. Push the changes to the branch and create a PR
 
 
 ## Contributing
