@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+if [ -z "$GITHUB_TOKEN" ];            then echo 'Environment variable GITHUB_TOKEN must be specified. Exiting.';              exit 1; fi
+if [ -z "$GEMFURY_TOKEN" ];           then echo 'Environment variable GEMFURY_TOKEN must be specified. Exiting.';             exit 1; fi
+if [ -z "$CIRCLE_PROJECT_USERNAME" ]; then echo 'Environment variable CIRCLE_PROJECT_USERNAME must be specified. Exiting.';   exit 1; fi
+if [ -z "$CIRCLE_PROJECT_REPONAME" ]; then echo 'Environment variable CIRCLE_PROJECT_REPONAME must be specified. Exiting.';   exit 1; fi
+if [ -z "$CIRCLE_SHA1" ];             then echo 'Environment variable CIRCLE_SHA1 must be specified. Exiting.';               exit 1; fi
+
+VERSION=$(cat lib/simplekiq/version.rb | grep VERSION | sed "s/.*'\(.*\)'.*/\1/")
+PACKAGE=simplekiq-${VERSION}.gem
+
+# Publish to Github
+# @see https://circleci.com/blog/publishing-to-github-releases-via-circleci/
+ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} v${VERSION} ${PACKAGE}
+
+# Publish to Gemfury
+curl -F package=@${PACKAGE} https://${GEMFURY_TOKEN}@push.fury.io/chime/

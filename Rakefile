@@ -1,6 +1,25 @@
 require "bundler/gem_tasks"
-require "rspec/core/rake_task"
+require 'rubygems'
+require 'bundler/setup'
+require 'bundler'
 
-RSpec::Core::RakeTask.new(:spec)
+task :doc do
+  system 'sdoc -N .'
+end
 
-task :default => :spec
+require 'rake/testtask'
+task :default => :test
+
+Rake::TestTask.new(:test) do |t|
+  t.test_files = FileList['test/functional/**/*_test.rb', 'test/unit/**/*_test.rb','test/integration/**/*_test.rb']
+  t.warning = false
+  t.verbose = false
+end
+
+namespace :test do
+  Rake::TestTask.new(:unit) do |t|
+    t.test_files = FileList['test/unit/**/*_test.rb']
+    t.warning = false
+    t.verbose = false
+  end
+end
