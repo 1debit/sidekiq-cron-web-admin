@@ -3,12 +3,63 @@
 # Check https://circleci.com/docs/2.0/language-ruby/ for more details
 #
 version: 2
+
+orbs:
+  slack: circleci/slack@3.4.2
+
 defaults: &defaults
   docker:
     - image: circleci/ruby:2-node
   environment:
     PROJECT_NAME: sidekiq-cron-web-admin
 jobs:
+  secrets_scan_patterns:
+    docker: 
+      - image: 'circleci/python:latest'
+    environment:
+      CIRCLE_COMPARE_URL: << pipeline.project.git_url >>/compare/<< pipeline.git.base_revision >>..<<pipeline.git.revision>>
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Trufflehog Secrets Scan Patterns 
+          command: |
+            # Clone Patterns
+            git clone https://1debitops:$GITHUB_TOKEN@github.com/1debit/infosec-secrets-patterns.git /tmp/infosec-secrets-patterns
+            
+            # Install Trufflehog
+            sudo pip install trufflehog
+            
+            # Run Trufflehog scan
+            trufflehog --rules /tmp/infosec-secrets-patterns/regexes.json --entropy=False --max_depth 1 ~/repo
+      - run:
+          name: Slack Notification on Build Failed
+          when: on_fail
+          command: |
+            curl -X POST --data-urlencode "payload={\"channel\": \"#infosec-github-secrets\", \"username\": \"webhookbot\", \"text\": \"*Trufflehog Secrets Scan Patterns:*\n CircleCI Project: $CIRCLE_PROJECT_REPONAME\n CircleCi Build URL: $CIRCLE_BUILD_URL\n Github Comparing Changes: $CIRCLE_COMPARE_URL\n Github Pull Request (if already exists): $CIRCLE_PULL_REQUEST\", \"icon_emoji\": \":ghost:\"}" $SLACK_WEBHOOK
+           
+  secrets_scan_entropy:
+    docker: 
+      - image: 'circleci/python:latest'
+    environment:
+      CIRCLE_COMPARE_URL: << pipeline.project.git_url >>/compare/<< pipeline.git.base_revision >>..<<pipeline.git.revision>>
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Entropy Trufflehog Scan
+          command: |
+            # Install Trufflehog
+            sudo pip install trufflehog
+            
+            # Run Trufflehog scan
+            trufflehog --max_depth 1 ~/repo
+      - run:
+          name: Slack Notification on Build Failed
+          when: on_fail
+          command: |
+            curl -X POST --data-urlencode "payload={\"channel\": \"#infosec-github-secrets\", \"username\": \"webhookbot\", \"text\": \"*Trufflehog Secrets Scan Entropy:*\n CircleCI Project: $CIRCLE_PROJECT_REPONAME\n CircleCi Build URL: $CIRCLE_BUILD_URL\n Github Comparing Changes: $CIRCLE_COMPARE_URL\n Github Pull Request (if already exists): $CIRCLE_PULL_REQUEST\", \"icon_emoji\": \":ghost:\"}" $SLACK_WEBHOOK
+
   env:
     docker:
       - image: chimeimagebuilder/ci
@@ -121,6 +172,8 @@ workflows:
   version: 2
   build_test_publish:
     jobs:
+      - secrets_scan_patterns
+      - secrets_scan_entropy
       - env:
           filters:
             tags:
