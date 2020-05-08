@@ -3,6 +3,10 @@
 # Check https://circleci.com/docs/2.0/language-ruby/ for more details
 #
 version: 2
+
+orbs:
+  cit: chime/ci-tools@1
+
 defaults: &defaults
   docker:
     - image: circleci/ruby:2-node
@@ -152,3 +156,4 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v(\d+\.){1,}\d+/
+      - cit/security-scan
