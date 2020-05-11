@@ -157,5 +157,4 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v(\d+\.){1,}\d+/
-      - cit/security-scan:
-          context: ruby-build
+      - cit/security-scan
