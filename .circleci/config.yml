@@ -50,4 +50,3 @@ workflows:
             branches:
               only:
                 - master
-                - kv_no_kibbles
