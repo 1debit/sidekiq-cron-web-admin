@@ -19,12 +19,10 @@ jobs:
       - checkout
       - run:
           name: Package
-          command: |
-
+          command: gem build sidekiq-cron-web-admin.gemspec
       - run:
-          name: "Tag"
+          name: "Tag & Publish"
           command: |
-            gem build sidekiq-cron-web-admin.gemspec
             PACKAGE=$(ls *.gem)
             VERSION=$(echo $PACKAGE | sed "s/.*-\(.*\)\.gem/\1/")
 
