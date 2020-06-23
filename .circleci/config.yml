@@ -18,15 +18,25 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Package
+          command: |
+
+      - run:
           name: "Tag"
           command: |
-            VERSION=$(cat lib/sidekiq/cron/web/admin/version.rb | grep VERSION | sed "s/.*'\(.*\)'.*/\1/")
-            if [ $(git tag -l "v$VERSION") ]; then echo "Pre existing Tag v$VERSION"; exit 1; fi
+            gem build sidekiq-cron-web-admin.gemspec
+            PACKAGE=$(ls *.gem)
+            VERSION=$(echo $PACKAGE | sed "s/.*-\(.*\)\.gem/\1/")
+
+            if [ $(git tag -l $VERSION) ]; then echo "Pre-existing Tag $VERSION"; exit 1; fi
 
             git config --global user.email "chime@users.noreply.github.com"
             git config --global user.name "Chime Bot"
-            git tag -a v$VERSION -m "v$VERSION"
-            git push https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git v$VERSION
+            git tag -a $VERSION -m "Version $VERSION"
+
+            echo git push https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $VERSION
+            echo ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} v${VERSION} ${PACKAGE}
+            echo curl -F package=@${PACKAGE} https://${GEMFURY_TOKEN}@push.fury.io/chime/
 
 workflows:
   version: 2
@@ -41,3 +51,4 @@ workflows:
             branches:
               only:
                 - master
+                - kv_no_kibbles
