@@ -17,6 +17,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - cit/install-ghr
       - run:
           name: Package
           command: gem build sidekiq-cron-web-admin.gemspec
