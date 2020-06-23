@@ -32,9 +32,9 @@ jobs:
             git config --global user.name "Chime Bot"
             git tag -a $VERSION -m "Version $VERSION"
 
-            echo git push https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $VERSION
-            echo ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} v${VERSION} ${PACKAGE}
-            echo curl -F package=@${PACKAGE} https://${GEMFURY_TOKEN}@push.fury.io/chime/
+            git push https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $VERSION
+            ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} ${PACKAGE}
+            curl -F package=@${PACKAGE} https://${GEMFURY_TOKEN}@push.fury.io/chime/
 
 workflows:
   version: 2
