@@ -1,154 +1,52 @@
-# Ruby CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-ruby/ for more details
-#
-version: 2
+version: 2.1
+
+orbs:
+  cit: chime/ci-tools@1
+
 defaults: &defaults
   docker:
-    - image: circleci/ruby:2-node
-  environment:
-    PROJECT_NAME: sidekiq-cron-web-admin
+    - image: circleci/ruby:2.5
+
 jobs:
-  env:
-    docker:
-      - image: chimeimagebuilder/ci
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-    steps:
-      - run: make -f ~/Makefile ci-env
-      - persist_to_workspace:
-          name: Environment Variables
-          root: .
-          paths:
-            - .bash_env
-            - .docker_env
-  build:
-    <<: *defaults
-    steps:
-      - checkout
-      - attach_workspace:
-          at: workspace
-      - run: cat workspace/.bash_env >> $BASH_ENV
-      - setup_remote_docker:
-          # docker_layer_caching: true # Cost Extra Per Project, Requires Approval
-      - run:
-          name: "Prepare"
-          command: |
-            docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
-            docker pull chimebank/$PROJECT_NAME:$DOCKER_BRANCH || true
-      - run:
-          name: "Build"
-          command: |
-            docker build \
-              --build-arg BUNDLE_GITHUB__COM="${GITHUB_TOKEN}:x-oauth-basic" \
-              --build-arg BUNDLE_GEM__FURY__IO="$GEMFURY_TOKEN" \
-              --build-arg GIT_BRANCH="$CIRCLE_BRANCH" \
-              --build-arg GIT_COMMIT_SHA="$CIRCLE_SHA1" \
-              --build-arg GIT_COMMITTED_AT=$(git log -1 --pretty=format:%ct) \
-              --tag chimebank/$PROJECT_NAME:$CIRCLE_SHA1 \
-              .
-      - run:
-          name: "Push"
-          command: |
-            docker push chimebank/$PROJECT_NAME:$CIRCLE_SHA1
-            docker tag chimebank/$PROJECT_NAME:$CIRCLE_SHA1 chimebank/$PROJECT_NAME:$CIRCLE_JOB
-            docker push chimebank/$PROJECT_NAME:$CIRCLE_JOB
   test:
     <<: *defaults
     steps:
-      - attach_workspace:
-          at: workspace
-      - run: cat workspace/.bash_env >> $BASH_ENV
-      - setup_remote_docker:
-          # docker_layer_caching: true # Cost Extra Per Project, Requires Approval
-      - run:
-          name: "Prepare"
-          command: |
-            docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
-            docker pull chimebank/$PROJECT_NAME:$CIRCLE_SHA1
-      - run:
-          name: "Test"
-          command: |
-            docker run \
-              -e CI -e CIRCLECI -e CIRCLE_BUILD_NUM -e CIRCLE_BRANCH -e CIRCLE_SHA1 -e CC_TEST_REPORTER_ID \
-              --env-file workspace/.docker_env \
-              chimebank/$PROJECT_NAME:$CIRCLE_SHA1 ./bin/test
-      - run:
-          name: "Publish"
-          command: |
-            docker tag chimebank/$PROJECT_NAME:$CIRCLE_SHA1 chimebank/$PROJECT_NAME:$DOCKER_BRANCH
-            docker push chimebank/$PROJECT_NAME:$DOCKER_BRANCH
+      - cit/bundler-preamble
+      - run: bundle exec rake test
   tag:
     <<: *defaults
     steps:
       - checkout
-      - attach_workspace:
-          at: workspace
-      - run: cat workspace/.bash_env >> $BASH_ENV
+      - cit/install-ghr
       - run:
-          name: "Tag"
+          name: Package
+          command: gem build sidekiq-cron-web-admin.gemspec
+      - run:
+          name: "Tag & Publish"
           command: |
-            VERSION=$(cat lib/sidekiq/cron/web/admin/version.rb | grep VERSION | sed "s/.*'\(.*\)'.*/\1/")
-            if [ $(git tag -l "v$VERSION") ]; then echo "Pre existing Tag v$VERSION"; exit 1; fi
+            PACKAGE=$(ls *.gem)
+            VERSION=$(echo $PACKAGE | sed "s/.*-\(.*\)\.gem/\1/")
+
+            if [ $(git tag -l $VERSION) ]; then echo "Pre-existing Tag $VERSION"; exit 1; fi
 
             git config --global user.email "chime@users.noreply.github.com"
             git config --global user.name "Chime Bot"
-            git tag -a v$VERSION -m "v$VERSION"
-            git push https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git v$VERSION
-  publish:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: workspace
-      - run: cat workspace/.bash_env >> $BASH_ENV
-      - setup_remote_docker:
-          # docker_layer_caching: true # Cost Extra Per Project, Requires Approval
-      - run:
-          name: "Prepare"
-          command: |
-            docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
-            docker pull chimebank/$PROJECT_NAME:$CIRCLE_SHA1
-      - run:
-          name: "Publish"
-          command: |
-            docker run \
-              -e CI -e CIRCLECI -e CIRCLE_BUILD_NUM -e CIRCLE_BRANCH -e CIRCLE_SHA1 -e CC_TEST_REPORTER_ID \
-              -e CIRCLE_PROJECT_USERNAME -e CIRCLE_PROJECT_REPONAME \
-              --env-file workspace/.docker_env \
-              chimebank/$PROJECT_NAME:$CIRCLE_SHA1 ./bin/publish
+            git tag -a $VERSION -m "Version $VERSION"
+
+            git push https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $VERSION
+            ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} ${PACKAGE}
+            curl -F package=@${PACKAGE} https://${GEMFURY_TOKEN}@push.fury.io/chime/
+
 workflows:
   version: 2
   build_test_publish:
     jobs:
-      - env:
-          filters:
-            tags:
-              only: /^v(\d+\.){1,}\d+/
-      - build:
-          requires:
-            - env
-          filters:
-            tags:
-              only: /^v(\d+\.){1,}\d+/
-      - test:
-          requires:
-            - build
-          filters:
-            tags:
-              only: /^v(\d+\.){1,}\d+/
+      - test
       - tag:
+          context: ruby-build
           requires:
             - test
           filters:
             branches:
               only:
                 - master
-      - publish:
-          requires:
-            - test
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v(\d+\.){1,}\d+/
