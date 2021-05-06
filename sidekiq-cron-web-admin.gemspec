@@ -13,13 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/1debit/sidekiq-cron-web-admin'
   spec.license       = 'MIT'
 
-  if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "https://gemfury.com'"
-  else
-    raise 'RubyGems 2.0 or newer is required to protect against ' \
-      'public gem pushes.'
-  end
-
+  ## TODO check why this is deleted in chime-optimizely and whether similar changes from flipper-failsafe-adapter are needed
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
