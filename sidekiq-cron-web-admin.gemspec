@@ -13,7 +13,6 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/1debit/sidekiq-cron-web-admin'
   spec.license       = 'MIT'
 
-  ## TODO check why this is deleted in chime-optimizely and whether similar changes from flipper-failsafe-adapter are needed
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
