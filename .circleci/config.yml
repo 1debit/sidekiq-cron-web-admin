@@ -19,6 +19,10 @@ workflows:
   build_test_publish:
     jobs:
       - test
+          filters:
+            tags:
+              only:
+                - /^pre-.*/
       - cit/gem-publish:
           context: gem-publish
           requires:

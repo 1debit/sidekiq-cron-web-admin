@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sidekiq-cron-web-admin (0.2.6.prev.1)
+    sidekiq-cron-web-admin (0.2.7.pre.1)
       sidekiq-cron (= 1.1.0)
 
 GEM
@@ -30,11 +30,11 @@ GEM
     redis-namespace (1.6.0)
       redis (>= 3.0.4)
     shoulda-context (1.2.2)
-    sidekiq (5.2.9)
-      connection_pool (~> 2.2, >= 2.2.2)
+    sidekiq (6.0.7)
+      connection_pool (>= 2.2.2)
       rack (~> 2.0)
-      rack-protection (>= 1.5.0)
-      redis (>= 3.3.5, < 4.2)
+      rack-protection (>= 2.0.0)
+      redis (>= 4.1.0)
     sidekiq-cron (1.1.0)
       fugit (~> 1.1)
       sidekiq (>= 4.2.1)
