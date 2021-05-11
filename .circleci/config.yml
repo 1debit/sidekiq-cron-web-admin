@@ -13,40 +13,24 @@ jobs:
     steps:
       - cit/bundler-preamble
       - run: bundle exec rake test
-  tag:
-    <<: *defaults
-    steps:
-      - checkout
-      - cit/install-ghr
-      - run:
-          name: Package
-          command: gem build sidekiq-cron-web-admin.gemspec
-      - run:
-          name: "Tag & Publish"
-          command: |
-            PACKAGE=$(ls *.gem)
-            VERSION=$(echo $PACKAGE | sed "s/.*-\(.*\)\.gem/\1/")
-
-            if [ $(git tag -l $VERSION) ]; then echo "Pre-existing Tag $VERSION"; exit 1; fi
-
-            git config --global user.email "chime@users.noreply.github.com"
-            git config --global user.name "Chime Bot"
-            git tag -a $VERSION -m "Version $VERSION"
-
-            git push https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $VERSION
-            ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} ${PACKAGE}
-            curl -F package=@${PACKAGE} https://${GEMFURY_TOKEN}@push.fury.io/chime/
 
 workflows:
   version: 2
   build_test_publish:
     jobs:
-      - test
-      - tag:
-          context: ruby-build
+      - test:
+          filters:
+            tags:
+              only:
+                - /^pre-.*/
+      - cit/gem-publish:
+          context: gem-publish
           requires:
             - test
           filters:
             branches:
               only:
                 - master
+            tags:
+              only:
+                - /^pre-.*/
