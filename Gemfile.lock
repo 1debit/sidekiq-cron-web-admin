@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sidekiq-cron-web-admin (0.2.7.pre.1)
+    sidekiq-cron-web-admin (0.2.7)
       sidekiq-cron (= 1.1.0)
 
 GEM
