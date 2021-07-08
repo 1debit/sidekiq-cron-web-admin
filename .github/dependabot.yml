@@ -19,7 +19,8 @@ updates:
   - package-ecosystem: bundler
     directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
+      day: tuesday
       time: "09:00" # UTC
     pull-request-branch-name:
       separator: "-"
