@@ -1,0 +1,37 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+registries:
+  rubygems-server-gem-fury-io-chime:
+    type: rubygems-server
+    url: https://gem.fury.io/chime
+    token: "${{secrets.RUBYGEMS_SERVER_GEM_FURY_IO_CHIME_TOKEN}}"
+  github-octocat:
+    type: git
+    url: https://github.com
+    username: x-access-token
+    password: "${{secrets.RUBYGEMS_SERVER_GITHUB_TOKEN}}"
+
+updates:
+  - package-ecosystem: bundler
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: tuesday
+      time: "09:00" # UTC
+    pull-request-branch-name:
+      separator: "-"
+    commit-message:
+      prefix: "chore "
+      prefix-development: "chore "
+      include: scope
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 10
+    versioning-strategy: lockfile-only
+    registries:
+      - rubygems-server-gem-fury-io-chime
+      - github-octocat
