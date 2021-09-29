@@ -1,7 +1,5 @@
-FROM chimebank/base-ruby:main-2.5
-
-RUN cd /tmp && curl -L --output ghr.tar.gz https://github.com/tcnksm/ghr/releases/download/v0.12.0/ghr_v0.12.0_linux_amd64.tar.gz && \
-    tar -xzvf ghr.tar.gz && chmod +x ghr_v0.12.0_linux_amd64/ghr && mv ghr_v0.12.0_linux_amd64/ghr /usr/local/bin/ghr && rm -rf /tmp/*
+ARG DOCKER_PREFIX=chimebank
+FROM $DOCKER_PREFIX/base-ruby:main-2.7
 
 WORKDIR /gem
 COPY Gemfile /gem/Gemfile
