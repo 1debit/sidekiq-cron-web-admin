@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  cit: chime/ci-tools@1
+  cit: chime/cit@1
 
 defaults: &defaults
   docker:
