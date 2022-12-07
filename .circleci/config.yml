@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  cit: chime/cit@1
+  cit: chime/cit@dev:migrate_image2
 
 defaults: &defaults
   docker:
