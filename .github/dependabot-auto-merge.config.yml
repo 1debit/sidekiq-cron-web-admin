@@ -1,0 +1,24 @@
+# Safest config:
+# merge minor development dependency updates (won't affect production code)
+- match:
+    dependency_type: development
+    update_type: semver:minor # includes patch updates!
+
+#
+# Good config if you're confident in your test coverage, integration tests, canaries:
+#
+
+# # merge patch production and security dependency updates
+# - match:
+#     dependency_type: production
+#     update_type: semver:patch
+
+# - match:
+#     dependency_type: production
+#     update_type: security:patch
+
+# # Uncomment if you use chime-core:
+# # chime-core is currently versioned as <major>.<date>.<time> (major is set manually, date/time is the build ts)
+# # - match:
+# #     dependency_name: chime-core
+# #     update_type: semver:minor
