@@ -1,0 +1,19 @@
+# * @1debit/$YOUR-GROUP-HERE # Please create a github group for your team so that new contributors will get code reviews quickly!
+#
+# Anyone can edit
+#
+# This allows the @1debitops user to approve PRs and automerge them.
+# If you add someone below, you must also add @1debitops on the same line,
+# otherwise automerge will break.
+# If you wish to not restrict reviewers for these files, but want to get
+# notified on Dependabot PRs, add a "reviewers" section to your dependabot.yml
+Gemfile
+Gemfile.lock
+package.json
+yarn.lock
+package-lock.json
+go.mod
+go.sum
+requirements.txt
+requirements-runtime.txt
+.github/workflows/dependabot-auto-merge.yml
