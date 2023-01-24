@@ -16,4 +16,3 @@ go.mod
 go.sum
 requirements.txt
 requirements-runtime.txt
-.github/workflows/dependabot-auto-merge.yml
