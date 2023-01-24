@@ -1,0 +1,19 @@
+# see https://github.com/marketplace/actions/dependabot-auto-merge
+name: "Dependabot Automerge"
+
+on: pull_request_target
+
+jobs:
+  auto-merge:
+    if: startsWith(github.head_ref, 'dependabot')
+    runs-on: ubuntu-latest
+    steps:
+      # Check if auto merges/deploys are allowed
+      - name:  Auto Merges/deploys allowed?
+        uses: 1debit/pr-auto-merge-action@v1
+      # Check if PR can be auto-approved
+      - uses: actions/checkout@v3
+      - uses: ahmadnassri/action-dependabot-auto-merge@v2
+        with:
+          github-token: ${{ secrets.DEPENDABOT_AUTO_MERGE }} # 1debitops token
+          config: .github/dependabot-auto-merge.config.yml
